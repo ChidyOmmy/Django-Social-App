@@ -1,0 +1,6 @@
+{% extends 'Accounts/base.html' %}
+{% block body %}
+<div class="alert alert-success">
+  Account Created as {{ user.first_name }}
+<a href="{% url 'login' %}">Login</a>
+{% endblock body %}

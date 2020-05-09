@@ -1,0 +1,21 @@
+{% extends 'Accounts/base.html' %}
+{% block body %}
+{% if message %}
+  <div class="alert alert-info">{{message}}
+  {% if logged_in %}
+    <a href="{% url 'logout' %}" class="alert-link">Logout ?</a>
+  {% endif %}
+  </div>
+{% endif %}
+  <form class="form form-group" action="{% url 'login' %}" method="POST">
+    {% csrf_token %}
+    <dl>
+      <dt><label>username</label></dt>
+      <dd><input type="text" name="username" class="form-control" required></dd>
+      <dt><label>Password</label></dt>
+      <dd><input type="password" name="password" class="form-control" required></dd>
+    </dl>
+    <input type="submit" class="form-control" value="Login">
+    
+  </form>
+{% endblock body %}

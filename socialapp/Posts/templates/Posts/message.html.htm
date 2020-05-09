@@ -1,0 +1,32 @@
+{% extends 'Accounts/base.html' %}
+{% block body %}
+<h1>Messages</h1>
+{% csrf_token %}
+<form id="form">
+<input name="message" id="message">
+<input type="button" value="Send"
+onclick="send()">
+</form>
+<div id="output"></div>
+<script>
+function send(){
+	
+var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+	message = document.querySelector('#message').value;
+	output = document.querySelector('#output');
+	request = new XMLHttpRequest();
+	request.open('POST', 'message')
+	
+	request.onload = () => {
+		const data = JSON.parse(request.responseText);
+		output.innerHTML = data;
+	}
+	
+	const data = new FormData();
+	data.append('message', message);
+	data.append('csrfmiddlewaretoken', csrftoken);
+	request.send(data);
+	return False;
+	}
+</script>
+{% endblock body %}

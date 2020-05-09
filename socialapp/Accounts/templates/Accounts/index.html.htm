@@ -1,0 +1,10 @@
+{% extends 'Accounts/base.html' %}
+{% block body %}
+<h1>Hello world!</h1>
+<p>You're not logged in</p>
+<ul>
+  <li><a href="{% url 'login' %}">Login</a></li>
+  <li><a href="{% url 'register' %}">Create Account</a></li>
+  
+</ul>
+{% endblock%}

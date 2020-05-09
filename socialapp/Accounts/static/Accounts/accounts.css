@@ -1,0 +1,37 @@
+.profile-img{
+  width:100px;
+  border-radius:50%;
+}
+.profile-img-post{
+  width:50px;
+  border-radius:50%;
+}
+.profile-img-comment{
+  width:40px;
+  border-radius:50%;
+}
+.profile-img-reply{
+  width:35px;
+  border-radius:50%;
+}
+
+.like{
+  border:none;
+}
+
+small .pub_date{
+  color:grey;
+}
+
+.post{
+  box-shadow:2px 1px grey;
+  width:100%;
+}
+
+.comments{
+  background-color: #cfc;
+  border-left: 10px solid lightgreen;
+}
+
+  
+  

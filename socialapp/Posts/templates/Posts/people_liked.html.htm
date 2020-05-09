@@ -1,0 +1,16 @@
+{% extends 'Accounts/base.html' %}
+{% block body %}
+<h3 class="text-primary">People who liked</h3>
+<a href="{% url 'post_view' post.id %}">View Post</a>
+<ul class="list-group">
+  {% for like in likes %}
+  
+    <li class="list-group-item">
+      <img class="profile-img-comment" src="/static/accounts/profile_pics/{{like.author.dp}}" 
+      class="">
+      <a href="{% url 'profile_view' like.author.user.username %}">
+    {{ like.author.user.username }}</a>
+    </li>
+  {% endfor %}
+</ul>
+{% endblock body %}

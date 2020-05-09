@@ -1,0 +1,156 @@
+{% extends 'Accounts/base.html' %}
+{% load static %}
+{% block body %}
+{% if message %}
+  <p>{{message}}</p>
+{% endif %}
+  {% block posts%}
+  {% endblock posts %}
+    <h1>Create Post</h1>
+    <div class="container">
+    <form class="form form-group" action="{% url 'post' %}" method="POST">
+      {% csrf_token %}
+      <fieldset>Create a new post</fieldset>
+        <textarea name="content" class="form-control" placeholder="What's on your mind.?"></textarea>
+  
+        <input type="hidden" name="username" value="{{ request.user.username }}">
+        <input type="submit" class="btn btn-success" value="Create Post">
+    </form>
+    </div>
+    
+    <!-- Show Posts -->
+   <div class="container">
+    {% for post in posts %}
+ 			<div class="card post m-2 p-2">
+        {% if request.user.username == post.author.user.username %}
+          <a href="{% url 'edit_post' post.id %}">Edit Post</a>
+        {% endif %}
+        <div class="card-title">
+         <a href="{% url 'profile_view' post.author.user.username %}" class="card-link">
+          <img src="/static/Accounts/profile_pics/{{post.author.dp}}"
+            class ="profile-img-post " alt="{{post.author.dp}}">
+          <span>
+            {{post.author.user.username}}
+          </span>
+         </a>
+        </div>
+        <small class="pub_date">{{post.pub_date}}</small>
+        
+        <a href="{% url 'post_view' post.id %}" class="card-link text-dark">
+        	<div class="card-body m-2 p-2 lead">{{post.content}}</div>
+        </a>
+        
+          <a href="{% url 'people_liked' post.id %}" class="nav-link" id="peopleliked{{post.id}}">
+       		{% if post.likes.author == author %}
+       		You and {{ post.likes.count }}
+       		{% else %}
+       		{{ post.likes.last.author.user.username }} and {{ post.likes.count }} others
+       		{% endif %}
+          </a>
+        <!--- likes, Comments buttons -->
+        <!--- Likes --->
+        <form id="like">
+          {% csrf_token %}
+          <input type="hidden" id='post{{post.id}}' name="post" value="{{post.id}}">
+          <input type="hidden" id='post_username{{post.id}}' name="username" value="{{request.user.username}}">
+          <div class="btn-group">
+          	<button type="button" class="badge-primary like m-1" onclick="like('{{post.id}}')" id="likebutton{{post.id}}">Like
+          		<span class="badge" id="showlikes{{post.id}}">
+          		{% if post.likes.count %}
+          			{{post.likes.count}}
+          		{% endif %}
+          		</span>
+          	</button>
+          	<a href="#comments-{{post.id}}" data-toggle="collapse" class="card-link"> Comments
+          	{% if post.comment_set.count %}
+           		<span class="badge badge-primary">{{post.comment_set.count}}</span>
+           	{% endif %}
+          </a>
+         </div>
+        </form>
+         
+         <!-- Comments --->
+       <div class="comments-container collapse" id="comments-{{post.id}}">
+         <form method="POST" action="{% url 'comment' %}">
+           {% csrf_token %}
+           <textarea class="comment-field" id="comment{{post.id}}"></textarea>
+           <input type="hidden" id="post{{post.id}}" value="{{post.id}}" >
+           <input type="hidden" id="post_username{{post.id}}" value="{{request.user.username}}">
+           <button type="button" class="btn btn-success" onclick="comment('{{post.id}}')">Comment</button>
+           
+         </form>
+           
+          {% for comment in post.comment_set.all %}
+           <div class="comments p-1 m-1" id="comments_container{{post.id}}">
+             <a href="{% url 'profile_view' comment.author.user.username %}" class="card-link">
+             	<img src="/static/Accounts/profile_pics/{{comment.author.dp}}"
+                class="profile-img-comment">
+                <span>{{comment.author.user.username}}</span>
+             </a>
+             <div class="m-1 p-l-2">{{comment.comment}}</div>
+             <div class="comments-info">
+               <form action="{% url 'comment_like' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="comment" value="{{comment.id}}">
+                <input type="hidden" name="username" value="{{request.user.username}}">
+                <div class="btn-group">
+               	 <button type="submit" method="POST" class="badge badge-primary like">like
+                	<span class="badge badge-primary">{{comment.likes.count}}</span>
+                </button>
+                </div>
+               </form>
+               <small class="pub-date">{{comment.pub_date}}</small>
+             </div>
+           	 <!-- Replies --->
+              <div class="replies-container collapse" id="reply-{{comment.id}}">
+               {% for reply in comment.reply_set.all %}
+               <div class="comments p-1 m-1">
+                 <a href="{% url 'profile_view' reply.author.user.username %}" class="card-link">
+                  <img src="/static/Accounts/profile_pics/{{reply.author.dp}}"
+                    class="profile-img-comment">
+                  <span>{{reply.author.user.username}}</span>
+                 </a>
+                 <div class="m-1 p-l-2">{{reply.reply}}</div>
+                 <div class="reply-info">
+                   <form action="{% url 'reply_like' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="reply" value="{{reply.id}}">
+                    <input type="hidden" name="username" value="{{request.user.username}}">
+                    <div class="btn-group">
+                    	<button type="submit" class="badge badge-primary like">like
+                    		<span class="badge badge-primary">{{reply.likes.count}}</span>
+                   	  
+                   	  </button>
+                   	</div>
+                   </form>
+                   <small class="pub_date">{{reply.pub_date}}</small>
+                 </div>
+               </div>
+               {% endfor replies %}
+               <form method="POST" action="{% url 'reply' %}">
+	               {% csrf_token %}
+	               <textarea class="comment-field" name="reply"></textarea>
+	               <input type="hidden" name="comment" value="{{comment.id}}">
+	               <input type="hidden" name="username" value="{{request.user.username}}">
+	               <input type="submit" value="Reply" class="btn btn-success">
+             	 </form>
+               <!-- end replies --->
+           		</div>
+              <a href="#reply-{{comment.id}}" data-toggle="collapse" class="card-link">replies
+              {% if comment.reply_set.count %}
+               <span class="badge badge-secondary">{{comment.reply_set.count}}</span>
+              {% endif %}
+              </a>
+           </div>
+           {% empty %}
+             <div id="comments_container{{post.id}}">No Comments Yet. Be the first One 😀</div>
+           {% endfor comment %}
+        </div>
+         <!--- endcomments --->
+  		</div>
+    {% empty %}
+      <div>No posts to show</div>
+    {% endfor posts %}
+  </div>
+ <script src="{% static 'Posts/postajax6.js' %}"></script>
+{% endblock body %}

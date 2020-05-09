@@ -1,0 +1,7 @@
+{% extends 'Accounts/home.html' %}
+{% load static %}
+{% block posts %}
+  <img class="profile-img" src="/static/Accounts/profile_pics/{{user.dp}}">
+  
+  <h3 class="text-primary">{{user.user.first_name}} {{ user.user.last_name }}</h3>
+{% endblock posts %}
